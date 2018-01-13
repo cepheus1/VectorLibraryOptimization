@@ -58,21 +58,6 @@ VPriv vsum(VPriv v1, VPriv v2)
   return v1;
 }
 
-VPriv vprod(VPriv v1, VPriv v2)
-{
-  size_t i;
-  if (v1->n != v2->n) {
-    fprintf(stderr,"vprod: vector size mismatch\n");
-    exit(1);
-  }
-  /* We know that this operation consumes v1 and v2, so we can reuse
-     the memory of v1 for the result */
-  for (i=0; i<v1->n; i++)
-    v1->d[i] *= v2->d[i];
-  free(v2);
-  return v1;
-}
-
 VPriv svprod(double d, VPriv v1)
 {
   size_t i;

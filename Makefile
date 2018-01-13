@@ -8,7 +8,7 @@ clean:
 	rm main.o vectors.o mm
 
 perf: mm FORCE
-	perf stat -e cycles -e instructions ./mm 1999
+	perf stat -e cycles -e instructions --repeat 10 ./mm 1999
 
 check: mm FORCE
 	./mm 1999

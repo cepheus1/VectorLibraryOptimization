@@ -4,6 +4,7 @@
 #include "vectors.h"
 
 struct vect_private {
+  double factor;
   size_t n;
   double d[0];
 };
@@ -53,16 +54,14 @@ VPriv vsum(VPriv v1, VPriv v2)
   /* We know that this operation consumes v1 and v2, so we can reuse
      the memory of v1 for the result */
   for (i=0; i<v1->n; i++)
-    v1->d[i] += v2->d[i];
+    v1->d[i] = v1->factor * v1->d[i] + v2->factor * v2->d[i];
   free(v2);
   return v1;
 }
 
 VPriv svprod(double d, VPriv v1)
 {
-  size_t i;
-  for (i=0; i<v1->n; i++)
-    v1->d[i] *= d;
+  v1->factor *= d;
   return v1;
 }
 
@@ -73,6 +72,7 @@ VPriv vnew(double *dp, size_t n)
   size_t vbytes = sizeof(struct vect_private)+n*sizeof(double);
   VPriv v = malloc(vbytes);
   v->n = n;
+  v->factor = 1.0;
   memcpy(v->d,dp,n*sizeof(double));
   return v;
 }
@@ -83,6 +83,8 @@ void vstore(double *dp, size_t n, VPriv v)
     fprintf(stderr,"vstore: vector size mismatch\n");
     exit(1);
   }
+  for (size_t i = 0; i < v->n; i++)
+    v->d[i] *= v->factor;
   memcpy(dp,v->d,n*sizeof(double));
   free(v);
 }

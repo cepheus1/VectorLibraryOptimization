@@ -1,0 +1,147 @@
+<title>Abgabe Effiziente Programme WS16/17</title>
+
+<h1>Abgabe Effiziente Programme WS16/17</h1>
+
+Sie können ein beliebiges Beispiel wählen.  
+
+<p>Wer nichts anderes vorhat, kann die <a href="#vorgabe">unten
+vorgegebene Aufgabe</a> für dieses Semester wählen.
+
+<p>Natürlich können Sie, wenn Sie wollen, auch die Implementierung
+eines anderen Problems optimieren; allerdings hat das einige
+Nachteile: Sie müssen einen Teil der Zeit Ihrer Präsentation für die
+Erklärung des Problems und des Algorithmus aufwenden, und die
+Ergebnisse sind nicht direkt vergleichbar.  Der Vorteil (vor allem,
+wenn Sie einen späteren Termin wählen) ist, dass Sie nicht das
+wiederholen, was andere gemacht haben, oder ein langsameres Programm
+präsentieren.
+
+<p>Bereiten Sie eine 18-minütige Präsentation vor (am besten machen
+Sie einen Probelauf, damit sich die Präsentation auch sicher in der
+Zeit ausgeht).  Da Sie dabei nicht soviel Zeit haben wie ich in der
+Vorlesung, präsentieren Sie die meisten Schritte nur im Überblick
+(also eventuell nur, wieviel er gebracht hat), und nur ein paar
+besonders interessante Schritte mit mehr Details.  Besonders
+interessant sind u.a. die Schritte, die unerwartet viel oder
+unerwartet wenig bringen.
+
+
+<h2>Erlaubte Optimierungen</h2>
+
+Auch wenn der Fokus bei der Vorlesung nicht bei effizienten
+Algorithmen lag, dürfen Sie auch Algorithmen und Datenstrukturen
+ändern (damit erübrigt sich die Frage, ob eine Änderung den
+Algorithmus ändert oder nicht).
+
+<p>An sich muss das optimierte Programm für die gleiche Eingabe die
+gleiche Ausgabe produzieren wie das Originalprogramm, insbesondere für
+die gemessenen Testfälle.  Sie können Sich auch überlegen, bestimmte
+Eingaben nicht korrekt zu verarbeiten, müssen das dann aber
+dokumentieren und begründen, warum Sie meinen, dass das sinnvoll ist.
+
+<p>Sie dürfen auch die Programmiersprache ändern.
+
+<p>Ausgeschlossen sind allerdings Optimierungen zu Trivialprogrammen
+(z.B. <code>if Eingabe=Benchmarkeingabe then print
+Benchmarkausgabe</code>), da dabei zuwenig zu lernen ist.
+
+<p>Bei der vorgegebenen Aufgabe dieses Jahr darf nur vectors.c und
+vectors.h geändert werden, der Rest (also main.c) ist als Eingabe für
+den Benchmark zu betrachten.
+
+
+<h2><a name="vorgabe">Vorgegebene Aufgabe:</a> Vektor-Library</h2>
+
+Alles zusammengepackt finden Sie
+in <a href="effizienz-aufgabe17.tar.gz">effizienz-aufgabe17.tar.gz</a>.
+
+<p>Das Interface der Vektor-Library ist
+in <a href="vectors.h">vectors.h</a> umrissen.  Ein wichtiger Aspekt
+dabei ist, dass die Vektoren Werte-Semantik haben
+und <a href="https://en.wikipedia.org/wiki/Immutability">unveränderbar</a>
+sind.  Sie verlässt sich dafür darauf, dass die Anwendung die
+Vector-Werte nur mit den vorgesehenen Operationen verarbeitet, und sie
+z.B. nicht mit einfachen Zuweisungen kopiert, oder einen Vektor in
+einer Variable mit einer einfachen Zuweisung ueberschreibt.  Sie
+können sich bei der Optimierung auch darauf verlassen.
+
+<p>In der Referenzimplementierung <a href="vectors.c">vectors.c</a>
+wird die Wertesemantik so implementiert, dass es immer nur eine
+Referenz auf einen Vektor gibt, und beim Erstellen einer neuen
+Referenz mit vcopy() auch gleich der zugehörige Vektor kopiert wird;
+stattdessen kann man die Referenz auch weitergeben, sodass am
+ursprünglichen Platz keine Referenz mehr übrigbleibt (vconsume()).
+Durch diese Eigenschaft der Implementierung kann z.B. vsum(), das zwei
+Vektoren verbraucht und einen erzeugt, den Speicher eines Operanden
+für sein Resultat verwenden, und verletzt dabei die Bedingung der
+Unveränderbarkeit nicht: der Operand wurde ja durch vsum verbraucht
+und sein Speicher würde sonst einfach freigegeben werden (und Speicher
+für das Resultat allokiert werden).
+
+<p>Die <a href="main.c">Anwendung</a> ist eine Variante der
+Matrixmultiplikation aus der Vorlesung, wobei wir hier für die Messung
+eine 1999x1999-Matrix mit einer 1999x99-Matrix multiplizieren (Ihr
+Programm soll aber auch für andere Größen funktionieren).  Verändern
+Sie main.c nicht, sondern optimieren Sie nur vectors.c!  Auch wenn
+auch hier eine Matrixmultiplikation vorkommt, sind die
+Optimierungsgelegenheiten hier zum Großteil ganz andere als bei dem
+Beispiel in der Vorlesung.
+
+<p>Mit <code>make check</code> können Sie testen, ob das Programm noch
+das richtige Resultat für den Testfall liefert.  Mit <code>make
+perf</code> können Sie den Code benchmarken.  Das Resultat für die
+Originalversion ist:
+
+<pre>
+     1801950627  cycles                   #      0.000 M/sec
+     4451503743  instructions             #      2.470 IPC  
+
+    0.684736980  seconds time elapsed
+</pre>
+
+Das sind die Basiswerte, mit denen Sie Ihre Lösung vergleichen sollten
+(am Besten, indem Sie einen Speedup-Faktor angeben).  Relevant sind
+vor allem die Zyklen, andere Werte können aber zur Erklärung der
+gemessenen Zyklen dienen.
+
+<p>Sie können Ihr Programm (und Doku dazu, z.B. Ihre Präsentation) im
+Web veröffentlichen (wird nicht beurteilt), und zwar indem Sie
+auf <a href="../effizienz-abgaben/2017w/">/nfs/unsafe/httpd/ftp/pub/anton/lvas/effizienz-abgaben/2016w</a>
+ein Verzeichnis anlegen und Ihre Dateien in diesem Verzeichnis
+ablegen.
+
+
+<p>Aufgaben vom [<a href="../effizienz-aufgabe02.html">WS02/03</a> |
+<a href="../effizienz-aufgabe03.html">WS03/04</a> | <a
+href="../effizienz-aufgabe04.html">WS04/05</a> | <a
+href="../effizienz-aufgabe05/">WS05/06</a> | <a
+href="../effizienz-aufgabe06/">WS06/07</a> | <a
+href="../effizienz-aufgabe07/">WS07/08</a> | <a
+href="../effizienz-aufgabe08/">WS08/09</a> | <a
+href="../effizienz-aufgabe09/">WS09/10</a> | <a
+href="../effizienz-aufgabe10/">WS10/11</a> | <a
+href="../effizienz-aufgabe11/">WS11/12</a> | <a
+href="../effizienz-aufgabe12/">WS12/13</a> | <a
+href="../effizienz-aufgabe13/">WS13/14</a> | <a
+href="../effizienz-aufgabe14/">WS14/15</a> | <a
+href="../effizienz-aufgabe15/">WS15/16</a> | <a
+href="../effizienz-aufgabe16/">WS16/17</a> ]
+
+
+<h2><a name="termin">Termin/Anmeldung zur Präsentation</a></h2>
+
+<!--Die Termine stehen noch nicht fest, Sie koennen sich noch nicht
+anmelden.-->
+Die Termine sind:
+
+<pre>
+11.1., 18.1., 25.1.
+</pre>
+
+Die Terminvergabe erfolgt über TISS.  Bitte bestimmen Sie genau
+eine(n) Ihrer Gruppe, der den Termin anmeldet, und die/der macht das
+dann.
+
+<hr>
+<a href="../">Anton Ertl</a>
+

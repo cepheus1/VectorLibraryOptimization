@@ -81,9 +81,14 @@ VPriv vsum(VPriv v1, VPriv v2)
   }
   /* We know that this operation consumes v1 and v2, so we can reuse
      the memory of v1 for the result */
-  for (i=0; i<v1->n; i++)
-    v1->d[i] = v1->factor * v1->d[i] + v2->factor * v2->d[i];
-  v1->factor = 1.0;
+  if (v1->factor == 1.0) {
+    for (i=0; i<v1->n; i++)
+      v1->d[i] += v2->factor * v2->d[i];
+  } else {
+    for (i=0; i<v1->n; i++)
+      v1->d[i] = v1->factor * v1->d[i] + v2->factor * v2->d[i];
+    v1->factor = 1.0;
+  }
   free_vector(v2);
   return v1;
 }

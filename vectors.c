@@ -53,15 +53,8 @@ VPriv vsum(VPriv v1, VPriv v2)
   }
   /* We know that this operation consumes v1 and v2, so we can reuse
      the memory of v1 for the result */
-  for (i=0; i < v1->n-3; i+=4) {
+  for (i=0; i<v1->n; i++)
     v1->d[i] = v1->factor * v1->d[i] + v2->factor * v2->d[i];
-    v1->d[i+1] = v1->factor * v1->d[i+1] + v2->factor * v2->d[i+1];
-    v1->d[i+2] = v1->factor * v1->d[i+2] + v2->factor * v2->d[i+2];
-    v1->d[i+3] = v1->factor * v1->d[i+3] + v2->factor * v2->d[i+3];
-  }
-  for (; i < v1->n; i++) {
-    v1->d[i] = v1->factor * v1->d[i] + v2->factor * v2->d[i];
-  }
   free(v2);
   return v1;
 }

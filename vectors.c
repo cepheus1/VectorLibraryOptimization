@@ -83,6 +83,7 @@ VPriv vsum(VPriv v1, VPriv v2)
      the memory of v1 for the result */
   for (i=0; i<v1->n; i++)
     v1->d[i] = v1->factor * v1->d[i] + v2->factor * v2->d[i];
+  v1->factor = 1.0;
   free_vector(v2);
   return v1;
 }

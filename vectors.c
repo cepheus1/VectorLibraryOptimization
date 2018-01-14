@@ -2,6 +2,7 @@
    reference */
 
 #include "vectors.h"
+#include <stdbool.h>
 
 struct vect_private {
   double factor;
@@ -9,12 +10,39 @@ struct vect_private {
   double d[0];
 };
 
+VPriv last_vector;
+bool last_vector_free;
+
+VPriv allocate_vector(size_t n)
+{
+  size_t vbytes = sizeof(struct vect_private)+n*sizeof(double);
+  
+  if (!last_vector_free || last_vector->n != n)
+    last_vector = malloc(vbytes);
+  
+  last_vector_free = false;
+  return last_vector;
+}
+
+void free_vector(VPriv v)
+{
+  if (v == NULL)
+    return;
+
+  if (last_vector == v)
+    last_vector_free = true;
+  else
+    free(v);
+}
+
 VPriv vcopy(Vector v)
 {
   VPriv v1 = (VPriv)v;
+
+  VPriv r = allocate_vector(v1->n);
   size_t vbytes = sizeof(struct vect_private)+v1->n*sizeof(double);
-  VPriv r = malloc(vbytes);
   memcpy(r,v1,vbytes);
+
   return r;
 }
 
@@ -29,7 +57,7 @@ void vdelete1(Vector *vp)
 {
   VPriv v1 = (VPriv)*vp;
   if (v1 != NULL) {
-    free(v1);
+    free_vector(v1);
     vp = NULL;
   }
 }
@@ -38,7 +66,7 @@ void vassign1(Vector *vp, VPriv v)
 {
   VPriv v1 = (VPriv)*vp;
   if (v1 != NULL)
-    free(v1);
+    free_vector(v1);
   *vp = (Vector)v;
 }
 
@@ -55,7 +83,7 @@ VPriv vsum(VPriv v1, VPriv v2)
      the memory of v1 for the result */
   for (i=0; i<v1->n; i++)
     v1->d[i] = v1->factor * v1->d[i] + v2->factor * v2->d[i];
-  free(v2);
+  free_vector(v2);
   return v1;
 }
 
@@ -69,8 +97,7 @@ VPriv svprod(double d, VPriv v1)
 /* Create a vector with n elements starting at dp */
 VPriv vnew(double *dp, size_t n)
 {
-  size_t vbytes = sizeof(struct vect_private)+n*sizeof(double);
-  VPriv v = malloc(vbytes);
+  VPriv v = allocate_vector(n);
   v->n = n;
   v->factor = 1.0;
   memcpy(v->d,dp,n*sizeof(double));
@@ -86,5 +113,5 @@ void vstore(double *dp, size_t n, VPriv v)
   for (size_t i = 0; i < v->n; i++)
     v->d[i] *= v->factor;
   memcpy(dp,v->d,n*sizeof(double));
-  free(v);
+  free_vector(v);
 }

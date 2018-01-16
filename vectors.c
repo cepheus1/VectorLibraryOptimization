@@ -72,7 +72,7 @@ void vassign1(Vector *vp, VPriv v)
 
 /* Vector sum and product */
 
-VPriv vsum(VPriv v1, VPriv v2)
+VPriv vsum(VPriv restrict v1, VPriv restrict v2)
 {
   size_t i;
   if (v1->n != v2->n) {

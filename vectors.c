@@ -7,6 +7,7 @@
 struct vect_private {
   double factor;
   size_t n;
+  char padding[16]; // ensures that d is 32 byte aligned
   double d[0];
 };
 
@@ -16,9 +17,10 @@ bool last_vector_free;
 VPriv allocate_vector(size_t n)
 {
   size_t vbytes = sizeof(struct vect_private)+n*sizeof(double);
+  vbytes = (vbytes + 31) & ~31UL;
   
   if (!last_vector_free || last_vector->n != n)
-    last_vector = malloc(vbytes);
+    last_vector = aligned_alloc(32, vbytes);
   
   last_vector_free = false;
   return last_vector;
@@ -40,7 +42,10 @@ VPriv vcopy(Vector v)
   VPriv v1 = (VPriv)v;
 
   VPriv r = allocate_vector(v1->n);
+  
   size_t vbytes = sizeof(struct vect_private)+v1->n*sizeof(double);
+  vbytes = (vbytes + 31) & ~31UL;
+  
   memcpy(r,v1,vbytes);
 
   return r;
@@ -86,8 +91,10 @@ VPriv vsum(VPriv restrict v1, VPriv restrict v2)
       v1->d[i] = v1->factor * v1->d[i] + v2->factor * v2->d[i];
     v1->factor = 1.0;
   } else {
+    double *d1 = __builtin_assume_aligned(v1->d, 32);
+    double *d2 = __builtin_assume_aligned(v2->d, 32);
     for (i=0; i<v1->n; i++)
-      v1->d[i] += v2->factor * v2->d[i];
+      d1[i] += v2->factor * d2[i];
   }
   free_vector(v2);
   return v1;

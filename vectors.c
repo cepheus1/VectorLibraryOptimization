@@ -18,9 +18,9 @@ VPriv allocate_vector(size_t n)
 {
   size_t vbytes = sizeof(struct vect_private)+n*sizeof(double);
   vbytes = (vbytes + 31) & ~31UL;
-  
+
   if (!last_vector_free || last_vector->n != n)
-    last_vector = aligned_alloc(32, vbytes);
+    __builtin_posix_memalign((void **)&last_vector, 32, vbytes);
   
   last_vector_free = false;
   return last_vector;

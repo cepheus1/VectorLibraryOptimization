@@ -16,7 +16,7 @@ bool last_vector_free;
 
 VPriv allocate_vector(size_t n)
 {
-  size_t vbytes = sizeof(struct vect_private)+n*sizeof(double);
+  size_t vbytes = sizeof(struct vect_private) + ((n + 3) & ~3UL) * sizeof(double);
   vbytes = (vbytes + 31) & ~31UL;
 
   if (!last_vector_free || last_vector->n != n)
@@ -43,7 +43,7 @@ VPriv vcopy(Vector v)
 
   VPriv r = allocate_vector(v1->n);
   
-  size_t vbytes = sizeof(struct vect_private)+v1->n*sizeof(double);
+  size_t vbytes = sizeof(struct vect_private)+((v1->n + 3) & ~3UL)*sizeof(double);
   vbytes = (vbytes + 31) & ~31UL;
   
   memcpy(r,v1,vbytes);
@@ -93,7 +93,8 @@ VPriv vsum(VPriv restrict v1, VPriv restrict v2)
   } else {
     double *d1 = __builtin_assume_aligned(v1->d, 32);
     double *d2 = __builtin_assume_aligned(v2->d, 32);
-    for (i=0; i<v1->n; i++)
+    size_t n = (v1->n + 3) & ~3UL;
+    for (i=0; i<n; i++)
       d1[i] += v2->factor * d2[i];
   }
   free_vector(v2);
